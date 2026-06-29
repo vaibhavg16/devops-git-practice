@@ -1,6 +1,6 @@
 # Git Commands Reference
 > Updated daily as I learn new commands
----
+
 ---
 
 ## Setup & Config
