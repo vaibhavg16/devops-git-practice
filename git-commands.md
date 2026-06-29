@@ -63,4 +63,4 @@
 | `git reset --soft HEAD~1` | Undo last commit, keep changes staged |
 | `git reset --hard HEAD~1` | Undo last commit and discard all changes (DANGEROUS) |
 
-
+Added this line
