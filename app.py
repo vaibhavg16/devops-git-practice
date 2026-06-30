@@ -11,3 +11,4 @@ def dashboard(): pass
 # Fix spacing
 # Done
 # Settings page
+def save_settings(): pass
