@@ -10,3 +10,4 @@ def dashboard(): pass
 # Fix typo
 # Fix spacing
 # Done
+# Settings page
