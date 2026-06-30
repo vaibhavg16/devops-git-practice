@@ -12,3 +12,4 @@ def dashboard(): pass
 # Done
 # Settings page
 def save_settings(): pass
+def load_settings(): pass
