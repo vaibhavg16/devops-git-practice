@@ -5,3 +5,8 @@ def validate();
 
 
 
+def dashboard(): pass
+# Add page
+# Fix typo
+# Fix spacing
+# Done
