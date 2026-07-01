@@ -1,9 +1,3 @@
-# Change 3
-# Hotfix: fix login bug
-# Hotfix: fix dashboard crash
-# Commit A change
-# Commit B change
-# Commit C change
 # Commit X change
 # Commit Y change
 # Commit Z change
