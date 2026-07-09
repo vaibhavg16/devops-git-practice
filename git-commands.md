@@ -139,56 +139,70 @@
 | **GitHub Flow** | Single long-lived `main` (always deployable) + short-lived `feature/*` branches merged via PR | Startups / web apps shipping fast with CI/CD |
 | **Trunk-Based Development** | Everyone commits to `main` (trunk) frequently, short-lived branches (hours, not days), feature flags for incomplete work | High-velocity teams at scale (e.g. Kubernetes, Google) with strong CI/CD |
 
-##GITHUB
 
-# ─── GitHub CLI — Auth ────────────────────────────────────
-gh auth login                          # authenticate with GitHub
-gh auth status                         # check which account is active
-gh auth logout                         # log out
-export GH_TOKEN="ghp_..."             # authenticate via environment variable
 
-# ─── GitHub CLI — Repos ──────────────────────────────────
-gh repo create <name> --public --add-readme   # create a new repo
-gh repo clone owner/repo               # clone using shorthand (handles auth)
-gh repo view owner/repo                # view repo details
-gh repo list                           # list all your repos
-gh repo delete owner/repo --yes        # delete a repo (careful!)
-gh browse                              # open current repo in browser
+```bash
+# ─── GitHub CLI — Auth ────────────────────────────────────────
+gh auth login                           # authenticate with GitHub
+gh auth status                          # check which account is active
+gh auth logout                          # log out
+export GH_TOKEN="ghp_..."              # authenticate via environment variable
 
-# ─── GitHub CLI — Issues ─────────────────────────────────
-gh issue create --title "" --body "" --label ""   # create an issue
-gh issue list                          # list open issues
-gh issue view <number>                 # view a specific issue
-gh issue close <number>                # close an issue
-gh issue reopen <number>               # reopen an issue
+# ─── GitHub CLI — Repositories ───────────────────────────────
+gh repo create <name> --public --add-readme  # create a new repo
+gh repo clone owner/repo                # clone using shorthand (handles auth)
+gh repo view owner/repo                 # view repo details
+gh repo list                            # list all your repos
+gh repo delete owner/repo --yes         # delete a repo (permanent!)
+gh browse                               # open current repo in browser
+gh browse --repo owner/repo             # open a specific repo in browser
 
-# ─── GitHub CLI — Pull Requests ──────────────────────────
+# ─── GitHub CLI — Issues ─────────────────────────────────────
+gh issue create --title "" --body "" --label ""  # create an issue
+gh issue list                           # list open issues
+gh issue list --label "bug"             # filter by label
+gh issue view <number>                  # view a specific issue
+gh issue close <number>                 # close an issue
+gh issue close <number> --comment ""    # close with a comment
+gh issue reopen <number>                # reopen an issue
+
+# ─── GitHub CLI — Pull Requests ──────────────────────────────
 gh pr create --title "" --body "" --base main   # create a PR
-gh pr create --fill                    # auto-fill from commit message
-gh pr list                             # list open PRs
-gh pr view <number>                    # view PR details
-gh pr checks <number>                  # view CI status of a PR
-gh pr merge <number> --merge --delete-branch    # merge a PR
-gh pr merge <number> --squash          # squash merge
-gh pr merge <number> --rebase          # rebase merge
-gh pr review <number> --approve        # approve a PR
+gh pr create --fill                     # auto-fill from commit message
+gh pr list                              # list open PRs
+gh pr view <number>                     # view PR details
+gh pr checks <number>                   # view CI check statuses
+gh pr diff <number>                     # view code changes in a PR
+gh pr checkout <number>                 # check out PR branch locally
+gh pr merge <number> --merge --delete-branch    # merge commit + delete branch
+gh pr merge <number> --squash           # squash merge
+gh pr merge <number> --rebase           # rebase merge
+gh pr merge <number> --auto             # auto-merge when checks pass
+gh pr review <number> --approve         # approve a PR
 gh pr review <number> --request-changes --body ""  # request changes
-gh pr checkout <number>                # check out PR branch locally
+gh pr review <number> --comment --body ""          # comment on a PR
 
-# ─── GitHub CLI — Actions / Workflows ────────────────────
-gh run list                            # list recent workflow runs
-gh run view <id>                       # view a specific run
-gh run watch <id>                      # watch a run live
-gh run rerun <id>                      # re-run a failed run
-gh workflow run <workflow.yml>         # trigger a workflow manually
+# ─── GitHub CLI — Actions / Workflows ────────────────────────
+gh run list                             # list recent workflow runs
+gh run list --status failure            # only failed runs
+gh run view <id>                        # view a specific run
+gh run watch <id>                       # watch a run live in terminal
+gh run rerun <id>                       # re-run a failed run
+gh run download <id> --dir ./artifacts  # download workflow artifacts
+gh workflow run <workflow.yml>          # trigger a workflow manually
 
-# ─── GitHub CLI — Advanced ───────────────────────────────
-gh api <endpoint>                      # make raw GitHub API calls
-gh api rate_limit                      # check API rate limit
-gh gist create <file> --public         # create a Gist
-gh gist list                           # list your Gists
-gh release create <tag> --title "" --notes ""   # create a release
-gh release list                        # list releases
-gh alias set <name> "<command>"        # create a command shortcut
-gh alias list                          # list your shortcuts
-gh search repos "<query>" --limit 10   # search GitHub repos
+# ─── GitHub CLI — Advanced ───────────────────────────────────
+gh api <endpoint>                       # raw GitHub API call
+gh api rate_limit                       # check API rate limit
+gh api --method PUT <endpoint>          # API call with specific HTTP method
+gh gist create <file> --public          # create a public Gist
+gh gist list                            # list your Gists
+gh gist view <id>                       # view a Gist
+gh release create <tag> --generate-notes  # create a release
+gh release list                         # list releases
+gh release download <tag> --dir ./      # download release assets
+gh alias set <name> "<command>"         # create a command shortcut
+gh alias list                           # list your shortcuts
+gh search repos "<query>" --limit 10    # search GitHub repos
+gh search repos "<query>" --language Go # filter by language
+```
