@@ -1,1 +1,1 @@
-hello dosto
+Feature CLI demo
