@@ -39,8 +39,11 @@
 | `git branch <name>` | Create a new branch |
 | `git checkout <branch>` | Switch to a branch |
 | `git checkout -b <name>` | Create and switch to a new branch |
+| `git switch <branch>` | Modern alternative to `checkout` for switching branches |
+| `git switch -c <name>` | Modern alternative to `checkout -b` — create and switch to a new branch |
 | `git merge <branch>` | Merge a branch into the current one |
 | `git branch -d <name>` | Delete a branch (safe — won't delete unmerged) |
+| `git branch -D <name>` | Force-delete a branch even if unmerged |
 
 ### Merge behavior notes
 - **Fast-forward merge**: happens when the target branch (e.g. `main`) hasn't moved since the feature branch was created — Git just moves the pointer forward, no merge commit.
@@ -104,13 +107,88 @@
 | `git pull` | Fetch and merge changes from remote |
 | `git clone <url>` | Copy a remote repository to your machine |
 | `git fetch` | Download changes from remote but don't merge yet |
+| **Fork** (GitHub feature, not a raw git command) | Creates your own copy of someone else's repo under your GitHub account; clone your fork locally, push changes there, then open a PR back to the original repo |
 
-## Undoing Changes
+## Undoing Changes — Restore
 
 | Command | What it does |
 |---|---|
 | `git restore <file>` | Discard changes in working directory (unstaged) |
 | `git restore --staged <file>` | Unstage a file (remove from staging area) |
-| `git revert <commit>` | Create a new commit that undoes a previous one (safe) |
-| `git reset --soft HEAD~1` | Undo last commit, keep changes staged |
-| `git reset --hard HEAD~1` | Undo last commit and discard all changes (DANGEROUS) |
+
+## Reset & Revert
+
+| Command | What it does |
+|---|---|
+| `git reset --soft HEAD~1` | Move branch pointer back 1 commit; changes stay **staged** |
+| `git reset --mixed HEAD~1` (default) | Move branch pointer back 1 commit; changes become **unstaged** (kept in working directory) |
+| `git reset --hard HEAD~1` | Move branch pointer back 1 commit; changes are **discarded entirely** (DANGEROUS — working directory reverted too) |
+| `git revert <commit>` | Create a **new commit** that undoes a previous commit's changes — original commit stays in history (SAFE for shared branches) |
+| `git revert --continue` | Continue a revert after resolving a conflict |
+| `git reflog` | Show a log of every place `HEAD` has pointed — the safety net to recover commits after a `reset --hard` (until garbage collected) |
+
+> **Reset vs Revert:** `reset` rewrites history by moving the branch pointer — only safe on local, unpushed commits. `revert` never rewrites history — it adds a new "undo" commit on top, so it's safe even on shared/pushed branches. Rule of thumb: **reset for private/local cleanup, revert for anything already shared.**
+
+> **Recovering from a hard reset:** run `git reflog` to find the commit hash you reset away from, then `git reset --hard <hash>` to restore it — as long as it hasn't been garbage collected yet.
+
+## Branching Strategies (Reference)
+
+| Strategy | How it works | Best for |
+|---|---|---|
+| **GitFlow** | Long-lived `main` + `develop`, plus `feature/*`, `release/*`, `hotfix/*` branches | Large teams, scheduled/versioned releases, need to maintain multiple production versions |
+| **GitHub Flow** | Single long-lived `main` (always deployable) + short-lived `feature/*` branches merged via PR | Startups / web apps shipping fast with CI/CD |
+| **Trunk-Based Development** | Everyone commits to `main` (trunk) frequently, short-lived branches (hours, not days), feature flags for incomplete work | High-velocity teams at scale (e.g. Kubernetes, Google) with strong CI/CD |
+
+##GITHUB
+
+# ─── GitHub CLI — Auth ────────────────────────────────────
+gh auth login                          # authenticate with GitHub
+gh auth status                         # check which account is active
+gh auth logout                         # log out
+export GH_TOKEN="ghp_..."             # authenticate via environment variable
+
+# ─── GitHub CLI — Repos ──────────────────────────────────
+gh repo create <name> --public --add-readme   # create a new repo
+gh repo clone owner/repo               # clone using shorthand (handles auth)
+gh repo view owner/repo                # view repo details
+gh repo list                           # list all your repos
+gh repo delete owner/repo --yes        # delete a repo (careful!)
+gh browse                              # open current repo in browser
+
+# ─── GitHub CLI — Issues ─────────────────────────────────
+gh issue create --title "" --body "" --label ""   # create an issue
+gh issue list                          # list open issues
+gh issue view <number>                 # view a specific issue
+gh issue close <number>                # close an issue
+gh issue reopen <number>               # reopen an issue
+
+# ─── GitHub CLI — Pull Requests ──────────────────────────
+gh pr create --title "" --body "" --base main   # create a PR
+gh pr create --fill                    # auto-fill from commit message
+gh pr list                             # list open PRs
+gh pr view <number>                    # view PR details
+gh pr checks <number>                  # view CI status of a PR
+gh pr merge <number> --merge --delete-branch    # merge a PR
+gh pr merge <number> --squash          # squash merge
+gh pr merge <number> --rebase          # rebase merge
+gh pr review <number> --approve        # approve a PR
+gh pr review <number> --request-changes --body ""  # request changes
+gh pr checkout <number>                # check out PR branch locally
+
+# ─── GitHub CLI — Actions / Workflows ────────────────────
+gh run list                            # list recent workflow runs
+gh run view <id>                       # view a specific run
+gh run watch <id>                      # watch a run live
+gh run rerun <id>                      # re-run a failed run
+gh workflow run <workflow.yml>         # trigger a workflow manually
+
+# ─── GitHub CLI — Advanced ───────────────────────────────
+gh api <endpoint>                      # make raw GitHub API calls
+gh api rate_limit                      # check API rate limit
+gh gist create <file> --public         # create a Gist
+gh gist list                           # list your Gists
+gh release create <tag> --title "" --notes ""   # create a release
+gh release list                        # list releases
+gh alias set <name> "<command>"        # create a command shortcut
+gh alias list                          # list your shortcuts
+gh search repos "<query>" --limit 10   # search GitHub repos
